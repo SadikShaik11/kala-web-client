@@ -1,7 +1,8 @@
-import React, { useState } from "react";
-import NotificationToggle from "./utils/NotificationToggle";
+import React, { useEffect, useState } from "react";
+import NotificationToggle from "../utils/NotificationToggle.jsx";
 import { useNavigate } from "react-router-dom";
 
+import Onboarding from "./Api.js";
 const SignupComp = () => {
   const [email, setEmail] = useState("");
   const [mobileNumber, setMobileNumber] = useState("");
@@ -11,32 +12,36 @@ const SignupComp = () => {
   const [data, setData] = useState("");
   const [error, setError] = useState("");
   const navigate = useNavigate();
+
   const handleSignUp = async () => {
     try {
-      const response = await fetch("http://localhost:3000/v1/api/user/signup", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          email,
-          mobileNumber,
-          password,
-          confirmPassword,
-        }),
-      });
-      const responseData = await response.json();
+      const responseData = await Onboarding.signup(
+        email,
+        mobileNumber,
+        password,
+        confirmPassword
+      );
       if (responseData.error) {
         setError(responseData.error);
       }
       if (responseData.data) {
-        setData(responseData.data);
-        navigate("/log-in");
+        setData(responseData);
+        setTimeout(() => {
+          navigate("/sign-in");
+        }, 5000);
       }
     } catch (error) {
       setError(error.message);
     }
   };
+
+  useEffect(() => {
+    if (message != "") {
+      setTimeout(() => {
+        setMessage("");
+      }, 2000);
+    }
+  }, [message]);
 
   return (
     <div>
